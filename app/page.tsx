@@ -272,7 +272,7 @@ export default function OrnamentOrderForm() {
 
               <div className="rounded-lg overflow-hidden">
                 <img
-                  src="/images/design-mode/SEC.%202_SELECTION.png"
+                  src="https://i.postimg.cc/1551LYqV/SEC-2-SELECTION.png"
                   alt="Ornament design options numbered 1-6"
                   className="w-full h-auto"
                 />
