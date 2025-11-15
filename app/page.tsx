@@ -162,7 +162,7 @@ export default function OrnamentOrderForm() {
               <h2 className="text-2xl font-bold text-foreground">Your Information</h2>
               <div className="rounded-lg overflow-hidden">
                 <img
-                  src="/images/design-mode/SEC.%201_COVER.png"
+                  src="https://i.postimg.cc/nzDh9Skn/SEC-1-COVER.png"
                   alt="Custom ornament designs showcase"
                   className="w-full h-auto"
                 />
