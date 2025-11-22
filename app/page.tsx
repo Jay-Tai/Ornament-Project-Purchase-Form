@@ -159,7 +159,7 @@ export default function OrnamentOrderForm() {
               <h2 className="text-2xl font-bold text-foreground">Your Information</h2>
               <div className="rounded-lg overflow-hidden">
                 <img
-                  src="/images/design-mode/SEC.%201_COVER.png"
+                  src="https://i.postimg.cc/rpRTxchZ/SEC-1-COVER.png"
                   alt="Custom ornament designs showcase"
                   className="w-full h-auto"
                 />
@@ -247,7 +247,7 @@ export default function OrnamentOrderForm() {
 
               <div className="rounded-lg overflow-hidden">
                 <img
-                  src="/images/design-mode/SEC.%202_SELECTION.png"
+                  src="https://i.postimg.cc/ydKGxz23/SEC-2-SELECTION.png"
                   alt="Ornament design options numbered 1-6"
                   className="w-full h-auto"
                 />
@@ -279,12 +279,12 @@ export default function OrnamentOrderForm() {
                           <SelectValue placeholder="Select a design" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1">Design 1 - Classic Star</SelectItem>
-                          <SelectItem value="2">Design 2 - Snowflake</SelectItem>
-                          <SelectItem value="3">Design 3 - Christmas Tree</SelectItem>
-                          <SelectItem value="4">Design 4 - Candy Cane</SelectItem>
-                          <SelectItem value="5">Design 5 - Bell</SelectItem>
-                          <SelectItem value="6">Design 6 - Ornament Ball</SelectItem>
+                          <SelectItem value="1">Design 1</SelectItem>
+                          <SelectItem value="2">Design 2</SelectItem>
+                          <SelectItem value="3">Design 3</SelectItem>
+                          <SelectItem value="4">Design 4</SelectItem>
+                          <SelectItem value="5">Design 5</SelectItem>
+                          <SelectItem value="6">Design 6</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
