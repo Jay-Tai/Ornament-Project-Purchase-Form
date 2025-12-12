@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { X } from "lucide-react"
 import { db } from "@/lib/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
+import { CheckCircle2 } from "lucide-react"
 
 interface OrnamentData {
   id: string
@@ -20,9 +21,8 @@ interface OrnamentData {
 interface FormData {
   firstName: string
   lastName: string
-  studentEmail: string
-  studentNumber: string
-  rooms: string
+  email: string
+  phoneNumber: string
 }
 
 export default function OrnamentOrderForm() {
@@ -30,17 +30,17 @@ export default function OrnamentOrderForm() {
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
-    studentEmail: "",
-    studentNumber: "",
-    rooms: "",
+    email: "",
+    phoneNumber: "",
   })
   const [ornaments, setOrnaments] = useState<OrnamentData[]>([{ id: "1", design: "", engraving: "" }])
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [agreedToFinalEngravings, setAgreedToFinalEngravings] = useState(false)
-  const [agreedToPayment, setAgreedToPayment] = useState(false)
-  const [agreedToAlternatePayment, setAgreedToAlternatePayment] = useState(false)
+  const [agreedToPickup, setAgreedToPickup] = useState(false)
+  const [agreedToPayAtEvent, setAgreedToPayAtEvent] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderSubmitted, setOrderSubmitted] = useState(false)
+  const [formsClosed, setFormsClosed] = useState(true)
 
   const calculatePrice = () => {
     const count = ornaments.length
@@ -71,9 +71,8 @@ export default function OrnamentOrderForm() {
     return (
       formData.firstName.trim() !== "" &&
       formData.lastName.trim() !== "" &&
-      formData.studentEmail.trim() !== "" &&
-      formData.studentNumber.trim() !== "" &&
-      formData.rooms.trim() !== ""
+      formData.email.trim() !== "" &&
+      formData.phoneNumber.trim() !== ""
     )
   }
 
@@ -88,9 +87,8 @@ export default function OrnamentOrderForm() {
       const orderData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        studentEmail: formData.studentEmail,
-        studentNumber: formData.studentNumber,
-        rooms: formData.rooms,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
         ornaments: ornaments.map((ornament, index) => ({
           ornamentNumber: index + 1,
           design: ornament.design,
@@ -102,8 +100,8 @@ export default function OrnamentOrderForm() {
         paymentStatus: "pending",
         agreedToTerms: agreedToTerms,
         agreedToFinalEngravings: agreedToFinalEngravings,
-        agreedToPayment: agreedToPayment,
-        agreedToAlternatePayment: agreedToAlternatePayment,
+        agreedToPickup: agreedToPickup,
+        agreedToPayAtEvent: agreedToPayAtEvent,
       }
 
       const ordersCollection = collection(db, "orders")
@@ -120,20 +118,64 @@ export default function OrnamentOrderForm() {
 
   const totalPrice = calculatePrice()
 
+  if (formsClosed) {
+    return (
+      <div className="min-h-screen bg-[#f8f5f0] flex items-center justify-center p-4 md:p-8">
+        <Card className="w-full max-w-2xl shadow-2xl border-0">
+          <CardContent className="space-y-8 py-12">
+            <div className="space-y-6 text-center">
+              <div className="flex justify-center">
+                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-16 h-16 text-green-600" />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h1 className="text-4xl font-bold text-foreground">Thank You!</h1>
+                <p className="text-xl text-muted-foreground">Order Forms Are Now Closed</p>
+              </div>
+
+              <div className="space-y-4 text-center text-base text-foreground">
+                <p>We appreciate all the orders we received for our Christmas ornament sale!</p>
+                <p className="text-lg font-semibold">Your custom ornaments are being created with care.</p>
+                <p>
+                  You will receive an email notification at the address you provided when your ornaments are ready for
+                  pickup at <span className="font-semibold">Jean Augustine Secondary School - Main Office</span>.
+                </p>
+              </div>
+
+              <div className="bg-festive/10 border-2 border-festive rounded-lg p-6 space-y-3">
+                <h2 className="font-bold text-lg text-festive">What's Next?</h2>
+                <ul className="space-y-2 text-left max-w-md mx-auto">
+                  <li className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-festive flex-shrink-0 mt-0.5" />
+                    <span>Watch for an email confirmation of your order</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-festive flex-shrink-0 mt-0.5" />
+                    <span>We will notify you when your ornaments are ready for pickup</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-festive flex-shrink-0 mt-0.5" />
+                    <span>Pick up your ornaments at the Main Office during school hours</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-4">
+                <p className="text-sm text-muted-foreground italic">Merry Christmas!</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#f8f5f0] flex items-center justify-center p-4 md:p-8">
       <Card className="w-full max-w-2xl shadow-2xl border-0">
         <CardHeader className="space-y-2 pb-6">
-          <div className="bg-amber-50 border-2 border-amber-400 rounded-lg p-4 mb-4">
-            <p className="text-base">
-              <span className="font-bold text-amber-900">Hey, Teachers!</span>{" "}
-              <span className="text-amber-800">
-                Before our change to prioritizing teachers, a few students weren't aware of the payment instructions. On
-                the third section of the form, you may find the payment instructions for you. Merry Christmas!
-              </span>
-            </p>
-          </div>
-
           <div className="flex items-center justify-between">
             <CardTitle className="text-3xl font-bold text-foreground">Custom Ornament Order</CardTitle>
             <div className="text-sm font-medium text-muted-foreground">Step {step} of 3</div>
@@ -147,7 +189,7 @@ export default function OrnamentOrderForm() {
             ))}
           </div>
           <CardDescription className="text-base">
-            {step === 1 && "Please provide your contact and shipping information"}
+            {step === 1 && "Please provide your contact information"}
             {step === 2 && "Design your custom ornaments"}
             {step === 3 && "Review your order before submitting"}
           </CardDescription>
@@ -159,7 +201,7 @@ export default function OrnamentOrderForm() {
               <h2 className="text-2xl font-bold text-foreground">Your Information</h2>
               <div className="rounded-lg overflow-hidden">
                 <img
-                  src="https://i.postimg.cc/rpRTxchZ/SEC-1-COVER.png"
+                  src="/images/design-mode/SEC.%201_COVER.png"
                   alt="Custom ornament designs showcase"
                   className="w-full h-auto"
                 />
@@ -187,39 +229,26 @@ export default function OrnamentOrderForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="studentEmail">Student Email Address</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="studentEmail"
+                  id="email"
                   type="email"
-                  value={formData.studentEmail}
-                  onChange={(e) => handleInputChange("studentEmail", e.target.value)}
-                  placeholder="jane.doe@student.edu"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  placeholder="jane.doe@example.com"
                   className="focus-visible:ring-festive"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="studentNumber">Student Number</Label>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
                 <Input
-                  id="studentNumber"
-                  value={formData.studentNumber}
-                  onChange={(e) => handleInputChange("studentNumber", e.target.value)}
-                  placeholder="123456789"
+                  id="phoneNumber"
+                  type="tel"
+                  value={formData.phoneNumber}
+                  onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                  placeholder="(555) 123-4567"
                   className="focus-visible:ring-festive"
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="rooms">Room(s) During the Day</Label>
-                <Input
-                  id="rooms"
-                  value={formData.rooms}
-                  onChange={(e) => handleInputChange("rooms", e.target.value)}
-                  placeholder="e.g. 215, 308, 112"
-                  className="focus-visible:ring-festive"
-                />
-                <p className="text-sm text-muted-foreground">
-                  If you're in multiple rooms during the day, please list them separated by commas.
-                </p>
               </div>
 
               <Button
@@ -247,7 +276,7 @@ export default function OrnamentOrderForm() {
 
               <div className="rounded-lg overflow-hidden">
                 <img
-                  src="https://i.postimg.cc/ydKGxz23/SEC-2-SELECTION.png"
+                  src="/images/design-mode/SEC.%202_SELECTION.png"
                   alt="Ornament design options numbered 1-6"
                   className="w-full h-auto"
                 />
@@ -279,12 +308,12 @@ export default function OrnamentOrderForm() {
                           <SelectValue placeholder="Select a design" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1">Design 1</SelectItem>
-                          <SelectItem value="2">Design 2</SelectItem>
-                          <SelectItem value="3">Design 3</SelectItem>
-                          <SelectItem value="4">Design 4</SelectItem>
-                          <SelectItem value="5">Design 5</SelectItem>
-                          <SelectItem value="6">Design 6</SelectItem>
+                          <SelectItem value="1">Design 1 - Classic Star</SelectItem>
+                          <SelectItem value="2">Design 2 - Snowflake</SelectItem>
+                          <SelectItem value="3">Design 3 - Christmas Tree</SelectItem>
+                          <SelectItem value="4">Design 4 - Candy Cane</SelectItem>
+                          <SelectItem value="5">Design 5 - Bell</SelectItem>
+                          <SelectItem value="6">Design 6 - Ornament Ball</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -344,16 +373,12 @@ export default function OrnamentOrderForm() {
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold text-muted-foreground">Student Email</p>
-                      <p className="text-foreground">{formData.studentEmail}</p>
+                      <p className="font-semibold text-muted-foreground">Email</p>
+                      <p className="text-foreground">{formData.email}</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-muted-foreground">Student Number</p>
-                      <p className="text-foreground">{formData.studentNumber}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-muted-foreground">Room(s)</p>
-                      <p className="text-foreground">{formData.rooms}</p>
+                      <p className="font-semibold text-muted-foreground">Phone Number</p>
+                      <p className="text-foreground">{formData.phoneNumber}</p>
                     </div>
                   </div>
                 </div>
@@ -391,17 +416,10 @@ export default function OrnamentOrderForm() {
                         All engravings and designs are final — any changes count as a new order with a new payment.
                       </li>
                       <li>
-                        I will send an e-transfer to <span className="font-semibold">inspirely4@gmail.com</span> for the
-                        total amount.
+                        Ornaments will be ready for pickup at Jean Augustine Secondary School Main Office once notified
+                        by email.
                       </li>
-                      <li>
-                        My first & last name and student number (from this form) will be included in the message section
-                        of the e-transfer.
-                      </li>
-                      <li>
-                        If I can't e-transfer, I will pay by card or cash on{" "}
-                        <span className="font-semibold">November 21, 2025</span>, in the main foyer during break.
-                      </li>
+                      <li>Payment will be made at the Christmas Event before ornaments are created.</li>
                     </ul>
                   </div>
 
@@ -435,31 +453,27 @@ export default function OrnamentOrderForm() {
 
                     <div className="flex items-start space-x-3">
                       <Checkbox
-                        id="payment"
-                        checked={agreedToPayment}
-                        onCheckedChange={(checked) => setAgreedToPayment(checked as boolean)}
+                        id="pickup"
+                        checked={agreedToPickup}
+                        onCheckedChange={(checked) => setAgreedToPickup(checked as boolean)}
                         className="mt-1 border-amber-700 data-[state=checked]:bg-festive data-[state=checked]:border-festive"
                       />
-                      <label htmlFor="payment" className="text-sm leading-relaxed cursor-pointer">
-                        Once I submit this form, I will make an interac e-transfer to{" "}
-                        <span className="font-semibold">inspirely4@gmail.com</span> with the final price. When
-                        submitting the e-transfer, I agree that I will include my first and last name along with the
-                        student number that I used to submit this purchase order in the "message" section of the
-                        e-transfer.
+                      <label htmlFor="pickup" className="text-sm leading-relaxed cursor-pointer">
+                        I agree that I do not expect the ornaments to be delivered to me. I will come to Jean Augustine
+                        Secondary School in the Main Office to pick up my ornaments. I will be notified by Email once it
+                        is ready.
                       </label>
                     </div>
 
                     <div className="flex items-start space-x-3">
                       <Checkbox
-                        id="alternatePayment"
-                        checked={agreedToAlternatePayment}
-                        onCheckedChange={(checked) => setAgreedToAlternatePayment(checked as boolean)}
+                        id="payAtEvent"
+                        checked={agreedToPayAtEvent}
+                        onCheckedChange={(checked) => setAgreedToPayAtEvent(checked as boolean)}
                         className="mt-1 border-amber-700 data-[state=checked]:bg-festive data-[state=checked]:border-festive"
                       />
-                      <label htmlFor="alternatePayment" className="text-sm leading-relaxed cursor-pointer">
-                        If for any reason that I am unable to make the e-transfer, I will come on{" "}
-                        <span className="font-semibold">November 21, 2025</span> to the main Foyer during break where I
-                        can make the payment through tap (Card) or pay through cash.
+                      <label htmlFor="payAtEvent" className="text-sm leading-relaxed cursor-pointer">
+                        I agree that only once I have paid at the Christmas Event, the ornament will be made.
                       </label>
                     </div>
                   </div>
@@ -475,11 +489,7 @@ export default function OrnamentOrderForm() {
                   className="flex-1 bg-festive hover:bg-festive-hover text-white font-semibold"
                   size="lg"
                   disabled={
-                    !agreedToTerms ||
-                    !agreedToFinalEngravings ||
-                    !agreedToPayment ||
-                    !agreedToAlternatePayment ||
-                    isSubmitting
+                    !agreedToTerms || !agreedToFinalEngravings || !agreedToPickup || !agreedToPayAtEvent || isSubmitting
                   }
                 >
                   {isSubmitting ? "Submitting..." : "Submit Order"}
@@ -489,10 +499,10 @@ export default function OrnamentOrderForm() {
           )}
 
           {orderSubmitted && (
-            <div className="text-center space-y-4 py-8">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <div className="space-y-6 text-center py-8">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                 <svg
-                  className="w-8 h-8 text-green-600"
+                  className="w-10 h-10 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -501,22 +511,22 @@ export default function OrnamentOrderForm() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-foreground">Order Submitted Successfully!</h2>
-              <p className="text-muted-foreground">
-                Your order has been saved. Please complete your payment following the instructions provided.
+              <h2 className="text-3xl font-bold text-foreground">Order Submitted Successfully!</h2>
+              <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                Thank you for your order! Your order has been received. Please remember to make your payment at the
+                Christmas Event. You will receive an email at <span className="font-semibold">{formData.email}</span>{" "}
+                when your ornaments are ready for pickup at the Main Office.
               </p>
-              <div className="bg-muted rounded-lg p-6 text-left space-y-2">
-                <h3 className="font-bold text-lg text-foreground">Order Details:</h3>
-                <p className="text-sm">
-                  <span className="font-semibold">Total Ornaments:</span> {ornaments.length}
+              <div className="bg-muted rounded-lg p-6 space-y-2 max-w-md mx-auto">
+                <p className="font-semibold text-foreground">Order Summary</p>
+                <p className="text-sm text-muted-foreground">
+                  Total Ornaments: <span className="font-semibold text-foreground">{ornaments.length}</span>
                 </p>
-                <p className="text-sm">
-                  <span className="font-semibold">Total Amount:</span> ${totalPrice.toFixed(2)}
-                </p>
-                <p className="text-sm">
-                  <span className="font-semibold">Payment To:</span> inspirely4@gmail.com
+                <p className="text-sm text-muted-foreground">
+                  Total Price: <span className="font-semibold text-festive text-lg">${totalPrice.toFixed(2)}</span>
                 </p>
               </div>
+              <p className="text-sm text-muted-foreground italic">Merry Christmas! 🎄</p>
             </div>
           )}
         </CardContent>
